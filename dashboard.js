@@ -18,8 +18,13 @@ async function loadCourses() {
 
   courses.forEach(course => {
     const li = document.createElement('li');
-    // textContent (not innerHTML) keeps user-typed text safe
-    li.textContent = course.title + (course.description ? ' - ' + course.description : '');
+    const link = document.createElement('a');
+    link.href = 'course.html?id=' + course.id;
+    link.textContent = course.title;
+    li.appendChild(link);
+    if (course.description) {
+      li.append(' - ' + course.description);
+    }
     list.appendChild(li);
   });
 }
