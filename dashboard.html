@@ -10,6 +10,18 @@
   <p id="roleText"></p>
   <button id="logoutBtn">Log out</button>
 
+  <!-- Only teachers will see this part -->
+  <div id="teacherPanel" style="display:none">
+    <h2>Create a course</h2>
+    <input id="courseTitle" placeholder="Course title"><br><br>
+    <textarea id="courseDesc" placeholder="Short description"></textarea><br><br>
+    <button id="createCourseBtn">Create course</button>
+    <p id="courseMessage"></p>
+  </div>
+
+  <h2>Courses</h2>
+  <ul id="courseList"></ul>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="dashboard.js"></script>
