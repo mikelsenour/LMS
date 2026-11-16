@@ -1,32 +1,60 @@
+let userId = null;
+
 async function loadCourses() {
+  const myBox = document.getElementById('myCourses');
+  const availBox = document.getElementById('courseList');
+  myBox.innerHTML = '';
+  availBox.innerHTML = '';
+
   const { data: courses, error } = await db
     .from('courses')
-    .select('id, title, description')
+    .select('id, title, description, teacher_id')
     .order('created_at', { ascending: false });
 
-  const list = document.getElementById('courseList');
-  list.innerHTML = '';
-
   if (error) {
-    list.textContent = 'Error: ' + error.message;
+    myBox.textContent = 'Error: ' + error.message;
     return;
   }
-  if (courses.length === 0) {
-    list.textContent = 'No courses yet.';
-    return;
-  }
+
+  // Which courses have I joined? (.eq keeps it to my own rows only)
+  const { data: mine } = await db
+    .from('enrollments')
+    .select('course_id')
+    .eq('student_id', userId);
+  const joined = new Set((mine || []).map(e => e.course_id));
 
   courses.forEach(course => {
     const li = document.createElement('li');
-    const link = document.createElement('a');
-    link.href = 'course.html?id=' + course.id;
-    link.textContent = course.title;
-    li.appendChild(link);
-    if (course.description) {
-      li.append(' - ' + course.description);
+    const isMine = joined.has(course.id) || course.teacher_id === userId;
+
+    if (isMine) {
+      const link = document.createElement('a');
+      link.href = 'course.html?id=' + course.id;
+      link.textContent = course.title;
+      li.appendChild(link);
+      if (course.description) li.append(' - ' + course.description);
+      myBox.appendChild(li);
+    } else {
+      li.append(course.title + (course.description ? ' - ' + course.description : '') + ' ');
+      const btn = document.createElement('button');
+      btn.textContent = 'Enrol';
+      btn.addEventListener('click', async () => {
+        const { error: enrolErr } = await db
+          .from('enrollments')
+          .insert({ course_id: course.id });
+        if (enrolErr) {
+          alert('Could not enrol: ' + enrolErr.message);
+        } else {
+          loadCourses();
+        }
+      });
+      li.appendChild(btn);
+      availBox.appendChild(li);
     }
-    list.appendChild(li);
   });
+
+  if (!myBox.children.length) myBox.textContent = 'You have not joined any courses yet.';
+  if (!availBox.children.length) availBox.textContent = 'No other courses available.';
 }
 
 async function loadDashboard() {
@@ -35,11 +63,12 @@ async function loadDashboard() {
     window.location.href = 'auth.html';
     return;
   }
+  userId = session.user.id;
 
   const { data: profile, error } = await db
     .from('profiles')
     .select('full_name, role')
-    .eq('id', session.user.id)
+    .eq('id', userId)
     .single();
 
   if (error) {
@@ -50,7 +79,6 @@ async function loadDashboard() {
   document.getElementById('welcome').textContent = 'Welcome, ' + profile.full_name;
   document.getElementById('roleText').textContent = 'You are logged in as a ' + profile.role;
 
-  // Show the create-course form only to teachers/admins
   if (profile.role === 'teacher' || profile.role === 'admin') {
     document.getElementById('teacherPanel').style.display = 'block';
   }
