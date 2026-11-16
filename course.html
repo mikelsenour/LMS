@@ -17,10 +17,17 @@
     <input id="matFile" type="file" accept="application/pdf"><br><br>
     <button id="uploadBtn">Upload</button>
     <p id="uploadMsg"></p>
+      <h2>Add a video</h2>
+    <input id="vidTitle" placeholder="Video title"><br><br>
+    <input id="vidUrl" placeholder="Paste YouTube link"><br><br>
+    <button id="videoBtn">Add video</button>
+    <p id="videoMsg"></p>
   </div>
 
   <h2>Materials</h2>
   <ul id="materialList"></ul>
+    <h2>Videos</h2>
+  <div id="videoList"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>

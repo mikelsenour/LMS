@@ -69,6 +69,9 @@ async function loadPage() {
   }
 
   loadMaterials();
+
+  loadMaterials();
+  loadVideos();
 }
 
 document.getElementById('uploadBtn').addEventListener('click', async () => {
@@ -119,4 +122,76 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
   loadMaterials();
 });
 
+// Pull the 11-character ID out of any normal YouTube link
+function extractYouTubeId(url) {
+  const match = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+
+async function loadVideos() {
+  const box = document.getElementById('videoList');
+  box.innerHTML = '';
+
+  const { data: videos, error } = await db
+    .from('videos')
+    .select('id, title, youtube_id')
+    .eq('course_id', courseId)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    box.textContent = 'Error: ' + error.message;
+    return;
+  }
+  if (videos.length === 0) {
+    box.textContent = 'No videos yet.';
+    return;
+  }
+
+  videos.forEach(v => {
+    const wrap = document.createElement('div');
+    const heading = document.createElement('h3');
+    heading.textContent = v.title;
+
+    const frame = document.createElement('iframe');
+    frame.src = 'https://www.youtube-nocookie.com/embed/' + v.youtube_id;
+    frame.width = '560';
+    frame.height = '315';
+    frame.style.maxWidth = '100%';
+    frame.allowFullscreen = true;
+    frame.setAttribute('allow', 'encrypted-media; picture-in-picture');
+
+    wrap.append(heading, frame);
+    box.appendChild(wrap);
+  });
+}
+
+document.getElementById('videoBtn').addEventListener('click', async () => {
+  const msg = document.getElementById('videoMsg');
+  const title = document.getElementById('vidTitle').value.trim();
+  const youtubeId = extractYouTubeId(document.getElementById('vidUrl').value.trim());
+
+  if (!title) {
+    msg.textContent = 'Please enter a title.';
+    return;
+  }
+  if (!youtubeId) {
+    msg.textContent = 'That does not look like a YouTube link.';
+    return;
+  }
+
+  const { error } = await db.from('videos').insert({
+    course_id: courseId,
+    title: title,
+    youtube_id: youtubeId
+  });
+
+  if (error) {
+    msg.textContent = 'Error: ' + error.message;
+  } else {
+    msg.textContent = 'Video added!';
+    document.getElementById('vidTitle').value = '';
+    document.getElementById('vidUrl').value = '';
+    loadVideos();
+  }
+});
 loadPage();
