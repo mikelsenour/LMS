@@ -66,6 +66,7 @@ async function loadPage() {
   // Show the upload form only to the teacher who owns this course
   if (course.teacher_id === currentUserId) {
     document.getElementById('teacherPanel').style.display = 'block';
+    document.getElementById('createExamLink').href = 'create-exam.html?course=' + courseId;
   }
 
   loadMaterials();

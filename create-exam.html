@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Exam - My LMS</title>
+</head>
+<body>
+  <a id="backLink" href="dashboard.html">&larr; Back to course</a>
+  <h1 id="pageTitle">Create an exam</h1>
+
+  <!-- Stage 1: name the exam -->
+  <div id="newExamPanel" style="display:none">
+    <input id="examTitle" placeholder="Exam title, e.g. Term 1 Test"><br><br>
+    <input id="examDuration" type="number" min="1" max="300" value="30">
+    minutes<br><br>
+    <button id="createExamBtn">Create exam</button>
+    <p id="examMsg"></p>
+  </div>
+
+  <!-- Stage 2: add questions -->
+  <div id="questionPanel" style="display:none">
+    <h2>Add a question</h2>
+    <textarea id="qText" placeholder="Question"></textarea><br><br>
+    A <input id="optA"><br><br>
+    B <input id="optB"><br><br>
+    C <input id="optC"><br><br>
+    D <input id="optD"><br><br>
+    Correct answer:
+    <select id="qCorrect">
+      <option value="a">A</option>
+      <option value="b">B</option>
+      <option value="c">C</option>
+      <option value="d">D</option>
+    </select>
+    Marks: <input id="qMarks" type="number" min="1" value="1" style="width:50px"><br><br>
+    <button id="addQuestionBtn">Add question</button>
+    <p id="qMsg"></p>
+
+    <hr>
+    <button id="publishBtn">Publish exam (students can take it)</button>
+    <p id="publishMsg"></p>
+  </div>
+
+  <div id="publishedNote" style="display:none">
+    <p><strong>This exam is published.</strong> Students enrolled in the course can now take it.</p>
+  </div>
+
+  <h2>Questions</h2>
+  <ol id="questionList"></ol>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="create-exam.js"></script>
+</body>
+</html>
