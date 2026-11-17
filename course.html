@@ -18,6 +18,13 @@
     <input id="matFile" type="file" accept="application/pdf"><br><br>
     <button id="uploadBtn">Upload</button>
     <p id="uploadMsg"></p>
+    <h2>Create an assignment</h2>
+    <input id="asTitle" placeholder="Assignment title"><br><br>
+    <textarea id="asDesc" placeholder="Instructions for students"></textarea><br><br>
+    Due date: <input id="asDue" type="datetime-local"><br><br>
+    Marks out of: <input id="asMax" type="number" min="1" value="100" style="width:70px"><br><br>
+    <button id="assignBtn">Create assignment</button>
+    <p id="assignMsg"></p>
       <h2>Add a video</h2>
     <input id="vidTitle" placeholder="Video title"><br><br>
     <input id="vidUrl" placeholder="Paste YouTube link"><br><br>
@@ -27,6 +34,8 @@
 
   <h2>Materials</h2>
   <ul id="materialList"></ul>
+  <h2>Assignments</h2>
+  <ul id="assignmentList"></ul>
   <h2>Exams</h2>
   <ul id="examList"></ul>
     <h2>Videos</h2>

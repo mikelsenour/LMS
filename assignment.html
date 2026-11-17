@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assignment - My LMS</title>
+</head>
+<body>
+  <a id="backLink" href="dashboard.html">&larr; Back to course</a>
+  <h1 id="asTitle">Loading...</h1>
+  <p id="asDescription"></p>
+  <p id="asDue"></p>
+
+  <h2>Your submission</h2>
+  <div id="submissionInfo"></div>
+
+  <div id="uploadPanel" style="display:none">
+    <p>Allowed: PDF, Word (.doc, .docx), or a photo (.jpg, .png). Maximum 10 MB.</p>
+    <input id="subFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"><br><br>
+    <button id="submitBtn">Submit</button>
+  </div>
+  <p id="msg"></p>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="assignment.js"></script>
+</body>
+</html>

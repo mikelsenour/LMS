@@ -73,6 +73,7 @@ async function loadPage() {
   loadMaterials();
   loadVideos();
   loadExams(isOwner); // <-- Fixed: Now loads exams on page start
+  loadAssignments(course.teacher_id === currentUserId);
 }
 
 document.getElementById('uploadBtn').addEventListener('click', async () => {
@@ -251,5 +252,77 @@ async function loadExams(isOwner) {
     list.appendChild(li);
   });
 }
+async function loadAssignments(isOwner) {
+  const list = document.getElementById('assignmentList');
+  list.innerHTML = '';
+
+  const { data: items, error } = await db
+    .from('assignments')
+    .select('id, title, due_at, max_marks')
+    .eq('course_id', courseId)
+    .order('created_at', { ascending: false });
+
+  if (error) { list.textContent = 'Error: ' + error.message; return; }
+  if (items.length === 0) { list.textContent = 'No assignments yet.'; return; }
+
+  // My own submissions, to show each assignment's status
+  const { data: subs } = await db
+    .from('submissions')
+    .select('assignment_id, marks')
+    .eq('student_id', currentUserId);
+  const mine = {};
+  (subs || []).forEach(s => { mine[s.assignment_id] = s; });
+
+  items.forEach(a => {
+    const li = document.createElement('li');
+    const due = a.due_at ? 'Due ' + new Date(a.due_at).toLocaleString() : 'No due date';
+
+    if (isOwner) {
+      li.textContent = a.title + ' - ' + due + ' - out of ' + a.max_marks;
+    } else {
+      const s = mine[a.id];
+      let status = 'Not submitted';
+      if (s) status = s.marks !== null ? 'Marked: ' + s.marks + ' / ' + a.max_marks : 'Submitted';
+
+      const link = document.createElement('a');
+      link.href = 'assignment.html?id=' + a.id;
+      link.textContent = a.title;
+      li.appendChild(link);
+      li.append(' - ' + due + ' - ' + status);
+    }
+    list.appendChild(li);
+  });
+}
+
+document.getElementById('assignBtn').addEventListener('click', async () => {
+  const msg = document.getElementById('assignMsg');
+  const title = document.getElementById('asTitle').value.trim();
+  const description = document.getElementById('asDesc').value.trim();
+  const dueValue = document.getElementById('asDue').value;
+  const maxMarks = parseInt(document.getElementById('asMax').value, 10);
+
+  if (!title || !maxMarks) {
+    msg.textContent = 'Please enter a title and the marks it is out of.';
+    return;
+  }
+
+  const { error } = await db.from('assignments').insert({
+    course_id: courseId,
+    title: title,
+    description: description,
+    due_at: dueValue ? new Date(dueValue).toISOString() : null,
+    max_marks: maxMarks
+  });
+
+  if (error) {
+    msg.textContent = 'Error: ' + error.message;
+  } else {
+    msg.textContent = 'Assignment created!';
+    document.getElementById('asTitle').value = '';
+    document.getElementById('asDesc').value = '';
+    document.getElementById('asDue').value = '';
+    loadAssignments(true);
+  }
+});
 
 loadPage();
