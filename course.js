@@ -64,15 +64,15 @@ async function loadPage() {
   document.getElementById('courseDesc').textContent = course.description || '';
 
   // Show the upload form only to the teacher who owns this course
-  if (course.teacher_id === currentUserId) {
+  const isOwner = (course.teacher_id === currentUserId);
+  if (isOwner) {
     document.getElementById('teacherPanel').style.display = 'block';
     document.getElementById('createExamLink').href = 'create-exam.html?course=' + courseId;
   }
 
   loadMaterials();
-
-  loadMaterials();
   loadVideos();
+  loadExams(isOwner); // <-- Fixed: Now loads exams on page start
 }
 
 document.getElementById('uploadBtn').addEventListener('click', async () => {
@@ -195,4 +195,61 @@ document.getElementById('videoBtn').addEventListener('click', async () => {
     loadVideos();
   }
 });
+
+async function loadExams(isOwner) {
+  const list = document.getElementById('examList');
+  list.innerHTML = '';
+
+  // Students only receive published exams (the database enforces this)
+  const { data: exams, error } = await db
+    .from('exams')
+    .select('id, title, duration_minutes, published')
+    .eq('course_id', courseId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    list.textContent = 'Error: ' + error.message;
+    return;
+  }
+  if (exams.length === 0) {
+    list.textContent = 'No exams yet.';
+    return;
+  }
+
+  // My own attempts, so I can show scores for exams already taken
+  const { data: attempts } = await db
+    .from('attempts')
+    .select('exam_id, score, total_marks, submitted_at')
+    .eq('student_id', currentUserId);
+  const done = {};
+  (attempts || []).forEach(a => { if (a.submitted_at) done[a.exam_id] = a; });
+
+  exams.forEach(exam => {
+    const li = document.createElement('li');
+    const link = document.createElement('a');
+
+    if (isOwner) {
+      link.href = 'create-exam.html?course=' + courseId + '&exam=' + exam.id;
+      link.textContent = exam.title;
+      li.appendChild(link);
+      li.append(' (' + (exam.published ? 'published' : 'draft') + ', ' + exam.duration_minutes + ' min)');
+      if (exam.published) {
+        const resultsLink = document.createElement('a');
+        resultsLink.href = 'results.html?exam=' + exam.id;
+        resultsLink.textContent = 'View results';
+        li.append(' | ');
+        li.appendChild(resultsLink);
+      }
+    } else if (done[exam.id]) {
+      li.textContent = exam.title + ' - Score: ' + done[exam.id].score + ' / ' + done[exam.id].total_marks;
+    } else {
+      link.href = 'take-exam.html?exam=' + exam.id;
+      link.textContent = exam.title + ' - Take exam';
+      li.appendChild(link);
+      li.append(' (' + exam.duration_minutes + ' min)');
+    }
+    list.appendChild(li);
+  });
+}
+
 loadPage();
