@@ -57,6 +57,58 @@ async function loadCourses() {
   if (!availBox.children.length) availBox.textContent = 'No other courses available.';
 }
 
+function makeRow(values, isHeader) {
+  const tr = document.createElement('tr');
+  values.forEach(v => {
+    const cell = document.createElement(isHeader ? 'th' : 'td');
+    cell.textContent = v;
+    tr.appendChild(cell);
+  });
+  return tr;
+}
+
+async function loadMyResults() {
+  const table = document.getElementById('myResults');
+  const average = document.getElementById('myAverage');
+  table.innerHTML = '';
+
+  // The nested select fetches the exam title and its course title in one request
+  const { data: attempts, error } = await db
+    .from('attempts')
+    .select('score, total_marks, submitted_at, exams(title, courses(title))')
+    .eq('student_id', userId)
+    .not('submitted_at', 'is', null)
+    .order('submitted_at', { ascending: false });
+
+  if (error) {
+    average.textContent = 'Error: ' + error.message;
+    return;
+  }
+  if (attempts.length === 0) {
+    average.textContent = 'You have not taken any exams yet.';
+    return;
+  }
+
+  table.appendChild(makeRow(['Course', 'Exam', 'Score', 'Percent', 'Date'], true));
+
+  let totalPct = 0;
+  attempts.forEach(a => {
+    const pct = a.total_marks > 0 ? Math.round((a.score / a.total_marks) * 100) : 0;
+    totalPct += pct;
+    const exam = a.exams;
+    table.appendChild(makeRow([
+      exam && exam.courses ? exam.courses.title : '-',
+      exam ? exam.title : 'Exam',
+      a.score + ' / ' + a.total_marks,
+      pct + '%',
+      new Date(a.submitted_at).toLocaleDateString()
+    ], false));
+  });
+
+  average.textContent = 'Exams taken: ' + attempts.length +
+    ' | Overall average: ' + Math.round(totalPct / attempts.length) + '%';
+}
+
 async function loadDashboard() {
   const { data: { session } } = await db.auth.getSession();
   if (!session) {
@@ -81,6 +133,11 @@ async function loadDashboard() {
 
   if (profile.role === 'teacher' || profile.role === 'admin') {
     document.getElementById('teacherPanel').style.display = 'block';
+  }
+
+  if (profile.role === 'student') {
+    document.getElementById('studentResults').style.display = 'block';
+    loadMyResults();
   }
 
   loadCourses();
