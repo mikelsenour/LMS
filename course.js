@@ -278,7 +278,11 @@ async function loadAssignments(isOwner) {
     const due = a.due_at ? 'Due ' + new Date(a.due_at).toLocaleString() : 'No due date';
 
     if (isOwner) {
-      li.textContent = a.title + ' - ' + due + ' - out of ' + a.max_marks;
+      li.textContent = a.title + ' - ' + due + ' - out of ' + a.max_marks + ' | ';
+      const subLink = document.createElement('a');
+      subLink.href = 'submissions.html?id=' + a.id;
+      subLink.textContent = 'View submissions';
+      li.appendChild(subLink);
     } else {
       const s = mine[a.id];
       let status = 'Not submitted';
