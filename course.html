@@ -9,9 +9,21 @@
   <a href="dashboard.html">&larr; Back to dashboard</a>
   <h1 id="courseTitle">Loading...</h1>
   <p id="courseDesc"></p>
+  <!-- Only enrolled students will see this -->
+  <div id="progressBox" style="display:none">
+    <h2>My progress</h2>
+    <p id="progressText"></p>
+    <p id="certArea"></p>
+  </div>
 
   <!-- Only the course's teacher sees this -->
   <div id="teacherPanel" style="display:none">
+    <h2>Course settings</h2>
+    <p>Pass mark:
+      <input id="passMark" type="number" min="1" max="100" value="60" style="width:60px"> %
+      <button id="savePassBtn">Save</button>
+      <span id="passMsg"></span>
+    </p>
     <h2>Upload a PDF</h2>
     <p><a id="createExamLink" href="#">+ Create an exam for this course</a></p>
     <input id="matTitle" placeholder="Title, e.g. Chapter 1 Notes"><br><br>

@@ -51,7 +51,7 @@ async function loadPage() {
 
   const { data: course, error } = await db
     .from('courses')
-    .select('title, description, teacher_id')
+    .select('title, description, teacher_id, pass_mark')
     .eq('id', courseId)
     .single();
 
@@ -68,6 +68,9 @@ async function loadPage() {
   if (isOwner) {
     document.getElementById('teacherPanel').style.display = 'block';
     document.getElementById('createExamLink').href = 'create-exam.html?course=' + courseId;
+    document.getElementById('passMark').value = course.pass_mark;
+  } else {
+    loadProgress();
   }
 
   loadMaterials();
@@ -252,6 +255,7 @@ async function loadExams(isOwner) {
     list.appendChild(li);
   });
 }
+
 async function loadAssignments(isOwner) {
   const list = document.getElementById('assignmentList');
   list.innerHTML = '';
@@ -328,5 +332,59 @@ document.getElementById('assignBtn').addEventListener('click', async () => {
     loadAssignments(true);
   }
 });
+
+document.getElementById('savePassBtn').addEventListener('click', async () => {
+  const msg = document.getElementById('passMsg');
+  const value = parseInt(document.getElementById('passMark').value, 10);
+
+  if (isNaN(value) || value < 1 || value > 100) {
+    msg.textContent = 'Enter a number from 1 to 100.';
+    return;
+  }
+
+  const { data, error } = await db
+    .from('courses')
+    .update({ pass_mark: value })
+    .eq('id', courseId)
+    .select('id');
+
+  if (error) msg.textContent = 'Error: ' + error.message;
+  else if (!data || data.length === 0) msg.textContent = 'Not saved.';
+  else msg.textContent = 'Saved!';
+});
+
+async function loadProgress() {
+  const { data: p, error } = await db.rpc('my_course_progress', { p_course_id: courseId });
+  if (error) return; // not enrolled: leave the box hidden
+
+  document.getElementById('progressBox').style.display = 'block';
+  document.getElementById('progressText').textContent =
+    'Exams taken: ' + p.exams_done + ' of ' + p.exams_total +
+    ' | Assignments marked: ' + p.assignments_done + ' of ' + p.assignments_total +
+    ' | Average so far: ' + p.average + '%' +
+    ' | Pass mark: ' + p.pass_mark + '%';
+
+  const area = document.getElementById('certArea');
+  area.innerHTML = '';
+
+  if (p.certificate_id) {
+    const a = document.createElement('a');
+    a.href = 'certificate.html?id=' + p.certificate_id;
+    a.textContent = 'View my certificate';
+    area.appendChild(a);
+  } else if (p.eligible) {
+    const btn = document.createElement('button');
+    btn.textContent = 'Get my certificate';
+    btn.addEventListener('click', async () => {
+      const { data: certId, error: claimErr } = await db.rpc('claim_certificate', { p_course_id: courseId });
+      if (claimErr) area.textContent = 'Error: ' + claimErr.message;
+      else window.location.href = 'certificate.html?id=' + certId;
+    });
+    area.appendChild(btn);
+  } else {
+    area.textContent = 'Finish every exam and assignment (all marked) with an average of at least ' +
+      p.pass_mark + '% to earn your certificate.';
+  }
+}
 
 loadPage();

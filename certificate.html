@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificate</title>
+  <style>
+    body { font-family: Georgia, 'Times New Roman', serif; margin: 20px; background: #f4f4f4; }
+    .cert {
+      max-width: 900px; margin: 20px auto; padding: 50px 40px; text-align: center;
+      background: #fff; border: 8px double #8a6d1d;
+    }
+    .cert h1 { font-size: 40px; letter-spacing: 4px; margin: 10px 0; color: #5b4510; }
+    .cert .school { font-size: 22px; letter-spacing: 2px; text-transform: uppercase; }
+    .cert .name { font-size: 38px; margin: 20px 0; border-bottom: 2px solid #8a6d1d;
+                  display: inline-block; padding: 0 30px; }
+    .cert .course { font-size: 28px; font-style: italic; margin: 10px 0; }
+    .cert .small { font-size: 16px; color: #555; margin: 8px 0; }
+    .signature { margin-top: 50px; }
+    .signature span { display: inline-block; width: 220px; border-top: 1px solid #333; padding-top: 6px; }
+    .actions { text-align: center; margin: 20px; }
+    @page { size: A4 landscape; margin: 10mm; }
+    @media print {
+      body { background: #fff; margin: 0; }
+      .no-print { display: none; }
+      .cert { margin: 0 auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="actions no-print">
+    <a id="backLink" href="dashboard.html">&larr; Back to course</a> &nbsp;
+    <button id="printBtn">Print / Save as PDF</button>
+  </div>
+  <p id="msg" class="no-print" style="text-align:center"></p>
+
+  <div class="cert" id="cert" style="display:none">
+    <p class="school" id="schoolName"></p>
+    <h1>CERTIFICATE OF COMPLETION</h1>
+    <p class="small">This is to certify that</p>
+    <p class="name" id="studentName"></p>
+    <p class="small">has successfully completed the course</p>
+    <p class="course" id="courseTitle"></p>
+    <p class="small" id="scoreLine"></p>
+    <p class="small" id="dateLine"></p>
+    <div class="signature"><span>Authorised signature</span></div>
+    <p class="small" id="certNo"></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="certificate.js"></script>
+</body>
+</html>
