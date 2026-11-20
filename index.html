@@ -1,6 +1,37 @@
-<body>
-  <h1>Welcome to my Learning Platform</h1>
-  <p>Teachers and students log in here.</p>
-  <a href="auth.html">Log in / Sign up</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - My LMS</title>
   <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <section class="hero">
+    <img src="logo.png" alt="" class="hero-logo" onerror="this.remove()">
+    <h1>Learn anywhere, at your own pace</h1>
+    <p>Course notes, videos, exams, assignments and certificates, all in one place.</p>
+    <a class="btn light" href="courses.html">Browse courses</a>
+    <a class="btn outline" href="auth.html">Log in / Sign up</a>
+  </section>
+
+  <h2>What you can do here</h2>
+  <div class="features">
+    <div class="feature"><h3>Study online</h3><p>Read PDF notes and watch lesson videos any time.</p></div>
+    <div class="feature"><h3>Take exams</h3><p>Timed multiple-choice exams with instant marking.</p></div>
+    <div class="feature"><h3>Submit assignments</h3><p>Upload your work and get marks and feedback.</p></div>
+    <div class="feature"><h3>Track progress</h3><p>See every score and your overall average.</p></div>
+    <div class="feature"><h3>Earn certificates</h3><p>Complete a course and download your certificate.</p></div>
+    <div class="feature"><h3>Light on data</h3><p>Simple pages that work well on a phone.</p></div>
+  </div>
+
+  <h2>Latest courses</h2>
+  <div id="courseGrid" class="course-grid">Loading...</div>
+  <p><a href="courses.html">See all courses &rarr;</a></p>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="site.js"></script>
+  <script src="home.js"></script>
 </body>
+</html>
