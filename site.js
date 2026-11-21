@@ -1,8 +1,68 @@
-const SITE_NAME = 'My LMS';   // <-- change to your school or platform name
+const SITE_NAME = 'Theds1 Learning';          // <-- shown beside the logo and in the footer
+const SITE_TAGLINE = 'Online Learning Platform';
 
 (async function buildSiteChrome() {
   const { data: { session } } = await db.auth.getSession();
   const current = window.location.pathname.split('/').pop() || 'index.html';
+
+  // Browser tab icon and phone home-screen icon
+  [['icon', 'favicon.png'], ['apple-touch-icon', 'apple-touch-icon.png']].forEach(([rel, href]) => {
+    const link = document.createElement('link');
+    link.rel = rel;
+    link.href = href;
+    document.head.appendChild(link);
+  });
+
+  // ----- slim dark bar with quick links -----
+  const topBar = document.createElement('div');
+  topBar.className = 'top-bar';
+  const topInner = document.createElement('div');
+  topInner.className = 'bar-inner';
+  [
+    [session ? 'dashboard.html' : 'auth.html', session ? 'My Dashboard' : 'Student Portal'],
+    ['courses.html', 'Courses'],
+    ['help.html', 'Help'],
+    ['about.html', 'Contact']
+  ].forEach(([href, label]) => {
+    const a = document.createElement('a');
+    a.href = href;
+    a.textContent = label;
+    topInner.appendChild(a);
+  });
+  topBar.appendChild(topInner);
+
+  // ----- main white header -----
+  const header = document.createElement('header');
+  header.className = 'site-nav';
+  const inner = document.createElement('div');
+  inner.className = 'nav-inner';
+
+  const brand = document.createElement('a');
+  brand.className = 'brand';
+  brand.href = 'index.html';
+
+  const logo = document.createElement('img');
+  logo.src = 'logo.png';
+  logo.alt = SITE_NAME;
+  logo.className = 'brand-logo';
+  logo.onerror = () => logo.remove();     // no logo file? the text still shows
+  brand.appendChild(logo);
+
+  const text = document.createElement('span');
+  text.className = 'brand-text';
+  const strong = document.createElement('strong');
+  strong.textContent = SITE_NAME;
+  const small = document.createElement('small');
+  small.textContent = SITE_TAGLINE;
+  text.append(strong, small);
+  brand.appendChild(text);
+  inner.appendChild(brand);
+
+  const menuBtn = document.createElement('button');
+  menuBtn.className = 'menu-btn';
+  menuBtn.textContent = '\u2630';
+  menuBtn.setAttribute('aria-label', 'Menu');
+  inner.appendChild(menuBtn);
 
   const links = [
     ['index.html', 'Home'],
@@ -11,35 +71,6 @@ const SITE_NAME = 'My LMS';   // <-- change to your school or platform name
     ['help.html', 'Help']
   ];
   if (session) links.push(['dashboard.html', 'My Dashboard']);
-
-  // ----- top menu -----
-  const header = document.createElement('header');
-  header.className = 'site-nav';
-
-  const brand = document.createElement('a');
-  brand.className = 'brand';
-  brand.href = 'index.html';
-
-  const logo = document.createElement('img');
-  logo.src = 'logo.png';
-  logo.alt = '';
-  logo.className = 'brand-logo';
-  logo.onerror = () => logo.remove();   // no logo file yet? just hide it
-  brand.appendChild(logo);
-  brand.append(SITE_NAME);
-  header.appendChild(brand);
-
-  // Use the logo as the browser tab icon too
-  const icon = document.createElement('link');
-  icon.rel = 'icon';
-  icon.href = 'logo.png';
-  document.head.appendChild(icon);
-
-  const menuBtn = document.createElement('button');
-  menuBtn.className = 'menu-btn';
-  menuBtn.textContent = '\u2630';            // the three-line menu icon
-  menuBtn.setAttribute('aria-label', 'Menu');
-  header.appendChild(menuBtn);
 
   const nav = document.createElement('nav');
   links.forEach(([href, label]) => {
@@ -67,16 +98,19 @@ const SITE_NAME = 'My LMS';   // <-- change to your school or platform name
     if (current === 'auth.html') inn.className = 'active';
     nav.appendChild(inn);
   }
-  header.appendChild(nav);
+  inner.appendChild(nav);
 
   menuBtn.addEventListener('click', () => nav.classList.toggle('open'));
+  header.appendChild(inner);
+
   document.body.prepend(header);
+  document.body.prepend(topBar);
 
   // ----- footer -----
   const footer = document.createElement('footer');
   footer.className = 'site-footer';
   footer.textContent = '\u00A9 ' + new Date().getFullYear() + ' ' + SITE_NAME + ' \u00B7 ';
-    [['courses.html', 'Courses'], ['about.html', 'About'], ['help.html', 'Help'],,
+  [['courses.html', 'Courses'], ['about.html', 'About'], ['help.html', 'Help'],
    [session ? 'dashboard.html' : 'auth.html', session ? 'Dashboard' : 'Log in']].forEach(([href, label], i) => {
     if (i > 0) footer.append(' \u00B7 ');
     const a = document.createElement('a');

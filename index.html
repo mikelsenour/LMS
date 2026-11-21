@@ -7,14 +7,46 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <section class="hero">
-    <img src="logo.png" alt="" class="hero-logo" onerror="this.remove()">
-    <h1>Learn anywhere, at your own pace</h1>
-    <p>Course notes, videos, exams, assignments and certificates, all in one place.</p>
-    <a class="btn light" href="courses.html">Browse courses</a>
-    <a class="btn outline" href="auth.html">Log in / Sign up</a>
-  </section>
+  <section class="hero-banner" id="heroBanner">
+    <div class="hero-bg" aria-hidden="true">
 
+      <!-- Pattern 1: floating bubbles -->
+      <div class="bg-slide s-bubbles active">
+        <span class="b b1"></span><span class="b b2"></span><span class="b b3"></span>
+        <span class="b b4"></span><span class="b b5"></span><span class="b b6"></span>
+      </div>
+
+      <!-- Pattern 2: drifting waves -->
+      <div class="bg-slide s-waves">
+        <svg class="wave w1" viewBox="0 0 2000 200" preserveAspectRatio="none"><path d="M0,100 C125,160 375,40 500,100 C625,160 875,40 1000,100 C1125,160 1375,40 1500,100 C1625,160 1875,40 2000,100 V200 H0 Z"/></svg>
+        <svg class="wave w2" viewBox="0 0 2000 200" preserveAspectRatio="none"><path d="M0,100 C125,160 375,40 500,100 C625,160 875,40 1000,100 C1125,160 1375,40 1500,100 C1625,160 1875,40 2000,100 V200 H0 Z"/></svg>
+        <svg class="wave w3" viewBox="0 0 2000 200" preserveAspectRatio="none"><path d="M0,100 C125,160 375,40 500,100 C625,160 875,40 1000,100 C1125,160 1375,40 1500,100 C1625,160 1875,40 2000,100 V200 H0 Z"/></svg>
+      </div>
+
+      <!-- Pattern 3: rippling rings -->
+      <div class="bg-slide s-rings">
+        <span class="ring r1"></span><span class="ring r2"></span>
+        <span class="ring r3"></span><span class="ring r4"></span>
+        <span class="ring-core"></span>
+      </div>
+
+      <!-- Pattern 4: turning curve over a moving dot grid -->
+      <div class="bg-slide s-sweep"></div>
+    </div>
+
+    <div class="hero-content">
+      <p class="eyebrow">Online Learning Platform</p>
+      <h1>Learn anywhere. Grow every day.</h1>
+      <p class="lead">Course notes, videos, timed exams, assignments and certificates, all in one place and light enough for your phone.</p>
+      <a class="btn gold" href="courses.html">Browse courses</a>
+      <a class="btn outline" href="auth.html">Log in / Sign up</a>
+    </div>
+
+    <div class="hero-controls">
+      <div class="dots" id="heroDots"></div>
+      <button id="heroToggle" aria-label="Pause background">&#10074;&#10074;</button>
+    </div>
+  </section>
   <h2>What you can do here</h2>
   <div class="features">
     <div class="feature"><h3>Study online</h3><p>Read PDF notes and watch lesson videos any time.</p></div>
@@ -38,5 +70,6 @@
   <script src="config.js"></script>
   <script src="site.js"></script>
   <script src="home.js"></script>
+  <script src="hero.js"></script>
 </body>
 </html>
