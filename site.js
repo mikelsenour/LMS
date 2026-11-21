@@ -7,6 +7,7 @@ const SITE_NAME = 'My LMS';   // <-- change to your school or platform name
   const links = [
     ['index.html', 'Home'],
     ['courses.html', 'Courses'],
+    ['about.html', 'About'],
     ['help.html', 'Help']
   ];
   if (session) links.push(['dashboard.html', 'My Dashboard']);
@@ -75,7 +76,7 @@ const SITE_NAME = 'My LMS';   // <-- change to your school or platform name
   const footer = document.createElement('footer');
   footer.className = 'site-footer';
   footer.textContent = '\u00A9 ' + new Date().getFullYear() + ' ' + SITE_NAME + ' \u00B7 ';
-  [['courses.html', 'Courses'], ['help.html', 'Help'],
+    [['courses.html', 'Courses'], ['about.html', 'About'], ['help.html', 'Help'],,
    [session ? 'dashboard.html' : 'auth.html', session ? 'Dashboard' : 'Log in']].forEach(([href, label], i) => {
     if (i > 0) footer.append(' \u00B7 ');
     const a = document.createElement('a');
